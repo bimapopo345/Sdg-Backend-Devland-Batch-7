@@ -20,8 +20,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "health"]
-            },
-            "description": "Endpoint untuk mengecek health/status API. Endpoint ini tidak memerlukan autentikasi."
+            }
           }
         },
         {
@@ -44,8 +43,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "auth", "register"]
-            },
-            "description": "Endpoint untuk registrasi user baru."
+            }
           }
         },
         {
@@ -87,8 +85,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "auth", "login"]
-            },
-            "description": "Endpoint untuk login. Token JWT akan otomatis tersimpan setelah login berhasil."
+            }
           }
         }
       ]
@@ -96,6 +93,21 @@
     {
       "name": "2. Admin APIs",
       "item": [
+        {
+          "name": "Reset All Users",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8091/api/admin/reset-users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "admin", "reset-users"]
+            },
+            "description": "PENTING: Endpoint ini akan menghapus semua user kecuali admin."
+          }
+        },
         {
           "name": "Create Admin",
           "request": {
@@ -116,8 +128,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "admin", "create"]
-            },
-            "description": "Endpoint untuk membuat admin baru. Hanya bisa diakses oleh admin."
+            }
           }
         },
         {
@@ -140,8 +151,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "admin", "update"]
-            },
-            "description": "Endpoint untuk mengupdate data admin."
+            }
           }
         },
         {
@@ -154,8 +164,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "admin", "1"]
-            },
-            "description": "Endpoint untuk menghapus admin. ID admin diberikan di URL."
+            }
           }
         },
         {
@@ -186,8 +195,7 @@
                   "value": "asc"
                 }
               ]
-            },
-            "description": "Endpoint untuk mendapatkan daftar semua admin dengan pagination dan sorting."
+            }
           }
         },
         {
@@ -218,8 +226,7 @@
                   "value": "asc"
                 }
               ]
-            },
-            "description": "Endpoint untuk mendapatkan daftar semua user dengan pagination dan sorting."
+            }
           }
         },
         {
@@ -242,8 +249,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "admin", "user", "1"]
-            },
-            "description": "Endpoint untuk admin mengupdate data user."
+            }
           }
         },
         {
@@ -256,8 +262,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "admin", "user", "1"]
-            },
-            "description": "Endpoint untuk admin menghapus user."
+            }
           }
         }
       ]
@@ -275,8 +280,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "user", "profile"]
-            },
-            "description": "Endpoint untuk user melihat profilnya sendiri."
+            }
           }
         },
         {
@@ -299,8 +303,7 @@
               "host": ["localhost"],
               "port": "8091",
               "path": ["api", "user", "profile"]
-            },
-            "description": "Endpoint untuk user mengupdate profilnya sendiri."
+            }
           }
         }
       ]
