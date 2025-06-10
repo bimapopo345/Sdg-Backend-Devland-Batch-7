@@ -1,0 +1,111 @@
+{
+  "info": {
+    "_postman_id": "1234567-89ab-cdef-0123-456789abcdef",
+    "name": "SDG API Collection",
+    "description": "Collection untuk testing SDG Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8091/api/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8091",
+          "path": ["api", "health"]
+        },
+        "description": "Endpoint untuk mengecek health/status API. Endpoint ini tidak memerlukan autentikasi."
+      }
+    },
+    {
+      "name": "2. Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"0812345678901\",\n    \"username\": \"johndoe\",\n    \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8091/api/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8091",
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Endpoint untuk registrasi user baru. Response akan memberikan status success/error."
+      }
+    },
+    {
+      "name": "3. Login User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = JSON.parse(responseBody);",
+              "if (jsonData.token) {",
+              "    pm.environment.set(\"token\", jsonData.token);",
+              "    console.log('Token JWT berhasil disimpan');",
+              "    console.log('Username:', jsonData.username);",
+              "    console.log('Role:', jsonData.role);",
+              "} else {",
+              "    console.log('Error:', jsonData.message);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"johndoe\",\n    \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8091/api/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8091",
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Endpoint untuk login. Setelah login berhasil, token JWT akan disimpan secara otomatis ke environment variable."
+      }
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ]
+}
