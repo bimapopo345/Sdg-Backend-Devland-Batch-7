@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,25 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @PostMapping("/reset-users")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Transactional
+    public ResponseEntity<?> resetUsers() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Hapus semua user kecuali admin
+            userRepository.deleteByRole("ROLE_USER");
+            
+            response.put("status", "Success");
+            response.put("message", "All users have been deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("status", "Error");
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 
     @PostMapping("/create")
     public ResponseEntity<?> createAdmin(@RequestBody RegisterRequest request) {

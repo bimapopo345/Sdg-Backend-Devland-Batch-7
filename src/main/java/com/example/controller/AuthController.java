@@ -38,7 +38,7 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService uds;
+    private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -46,20 +46,26 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         Map<String, Object> response = new HashMap<>();
-        
         try {
-            if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-                response.put("status", "Error");
-                response.put("message", "Username already exists");
-                return ResponseEntity.badRequest().body(response);
+            // Cek apakah ini user pertama, jika ya jadikan admin
+            boolean isFirstUser = userRepository.count() == 0;
+            
+            Map<String, Object> result;
+            if (isFirstUser) {
+                result = userService.registerAdmin(request);
+                response.put("message", "First user registered as admin successfully");
+            } else {
+                result = userService.register(request);
+                response.put("message", "User registered successfully");
             }
-
-            Map<String, Object> result = uds.register(request);
-            return ResponseEntity.ok(result);
+            
+            response.put("status", "Success");
+            response.put("data", result);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("status", "Error");
             response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
@@ -82,16 +88,18 @@ public class AuthController {
             );
 
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
             Map<String, Object> claims = new HashMap<>();
-            claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+            claims.put("role", user.getRole());
 
             String token = jwtUtil.generateToken(userDetails, claims);
 
             response.put("status", "Success");
             response.put("token", token);
             response.put("username", userDetails.getUsername());
-            response.put("role", claims.get("role"));
+            response.put("role", user.getRole());
 
             return ResponseEntity.ok(response);
 

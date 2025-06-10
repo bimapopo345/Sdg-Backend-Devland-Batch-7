@@ -6,12 +6,16 @@ import com.example.repository.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -31,12 +35,16 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
-        user.setRole("ROLE_USER");
+        user.setRole("ROLE_USER"); // Pastikan format role konsisten
 
         userRepository.save(user);
+        
+        logger.info("User registered successfully: {}", user.getUsername());
 
         result.put("status", "Success");
         result.put("message", "User registered successfully");
+        result.put("username", user.getUsername());
+        result.put("role", user.getRole());
         return result;
     }
 
@@ -52,12 +60,16 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
-        user.setRole("ROLE_ADMIN");
+        user.setRole("ROLE_ADMIN"); // Pastikan format role konsisten
 
         userRepository.save(user);
+        
+        logger.info("Admin registered successfully: {}", user.getUsername());
 
         result.put("status", "Success");
         result.put("message", "Admin registered successfully");
+        result.put("username", user.getUsername());
+        result.put("role", user.getRole());
         return result;
     }
 
@@ -77,6 +89,8 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         user.setPhone(request.getPhone());
+        
+        logger.info("Admin updated successfully: {}", user.getUsername());
 
         return userRepository.save(user);
     }
@@ -91,7 +105,14 @@ public class UserService {
             throw new RuntimeException("User is not an admin");
         }
 
+        // Check if this is the last admin
+        long adminCount = userRepository.count();
+        if (adminCount == 1) {
+            throw new RuntimeException("Cannot delete the last admin");
+        }
+
         userRepository.deleteById(id);
+        logger.info("Admin deleted successfully: ID {}", id);
     }
     
     public User updateUserProfile(String username, RegisterRequest request) {
@@ -106,12 +127,19 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         user.setPhone(request.getPhone());
+        
+        logger.info("User profile updated successfully: {}", user.getUsername());
 
         return userRepository.save(user);
     }
 
     public User getUserProfile(String username) {
+        logger.info("Fetching user profile for: {}", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    
+    public long countAdmins() {
+        return userRepository.countByRole("ROLE_ADMIN");
     }
 }
